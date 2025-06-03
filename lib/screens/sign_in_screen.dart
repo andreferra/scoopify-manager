@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../services/storage_service.dart';
+import '../services/user_context.dart';
 
 class SignInScreen extends StatefulWidget {
   final VoidCallback onSignUpTap;
@@ -14,6 +16,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  final StorageService _storageService = StorageService();
   bool _loading = false;
   String? _error;
 
@@ -28,21 +31,10 @@ class _SignInScreenState extends State<SignInScreen> {
         _passwordController.text.trim(),
       );
       if (user != null) {
-        final userData = await _authService.getUserData(user.uid);
-        // For now, just show a dialog with user info
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Welcome'),
-            content: Text(
-                'User: \\nEmail: \\${user.email}\\nData: \\${userData.toString()}'),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'))
-            ],
-          ),
-        );
+        final userModel = await _storageService.getUser(user.uid);
+        if (userModel != null) {
+          UserProvider.of(context).setUser(userModel);
+        }
       }
     } catch (e) {
       setState(() {
