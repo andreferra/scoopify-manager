@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../services/storage_service.dart';
+import '../services/user_context.dart';
 
 class SignUpScreen extends StatefulWidget {
   final VoidCallback onSignInTap;
@@ -15,6 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   final AuthService _authService = AuthService();
+  final StorageService _storageService = StorageService();
   bool _loading = false;
   String? _error;
 
@@ -36,20 +39,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _passwordController.text.trim(),
       );
       if (user != null) {
-        final userData = await _authService.getUserData(user.uid);
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Registration Successful'),
-            content: Text(
-                'User: \nEmail: ${user.email}\nData: ${userData.toString()}'),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'))
-            ],
-          ),
-        );
+        final userModel = await _storageService.getUser(user.uid);
+        if (userModel != null) {
+          UserProvider.of(context).setUser(userModel);
+        }
       }
     } catch (e) {
       setState(() {
