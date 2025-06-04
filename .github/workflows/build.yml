@@ -1,0 +1,38 @@
+name: Build Flutter App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run build (Linux)
+        run: flutter build linux
+
+      - name: Run build (Web)
+        run: flutter build web
+
+      - name: Run build (APK)
+        run: flutter build apk --debug
+
+      - name: Run tests
+        run: flutter test
+
