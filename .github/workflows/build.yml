@@ -24,14 +24,8 @@ jobs:
       - name: Analyze code
         run: flutter analyze
 
-      - name: Run build (Linux)
-        run: flutter build linux
-
       - name: Run build (Web)
         run: flutter build web
-
-      - name: Run build (APK)
-        run: flutter build apk --debug
 
       - name: Run tests
         run: flutter test
