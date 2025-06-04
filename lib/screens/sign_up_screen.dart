@@ -37,6 +37,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       if (user != null) {
         final userData = await _authService.getUserData(user.uid);
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
@@ -56,9 +57,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _error = e.toString();
       });
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -108,13 +111,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 8),
                 ],
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                   onPressed: _loading ? null : _handleSignUp,
                   child: _loading
                       ? const CircularProgressIndicator()
                       : const Text('Sign Up'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
                 ),
                 TextButton(
                   onPressed: widget.onSignInTap,

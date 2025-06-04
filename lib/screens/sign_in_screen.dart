@@ -29,13 +29,14 @@ class _SignInScreenState extends State<SignInScreen> {
       );
       if (user != null) {
         final userData = await _authService.getUserData(user.uid);
+        if (!mounted) return;
         // For now, just show a dialog with user info
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
             title: const Text('Welcome'),
             content: Text(
-                'User: \\nEmail: \\${user.email}\\nData: \\${userData.toString()}'),
+                'User: \nEmail: ${user.email}\nData: ${userData.toString()}'),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -49,9 +50,11 @@ class _SignInScreenState extends State<SignInScreen> {
         _error = e.toString();
       });
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -92,13 +95,13 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 8),
                 ],
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                   onPressed: _loading ? null : _handleSignIn,
                   child: _loading
                       ? const CircularProgressIndicator()
                       : const Text('Sign In'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
                 ),
                 TextButton(
                   onPressed: widget.onSignUpTap,
